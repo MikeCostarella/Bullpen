@@ -1,0 +1,57 @@
+# Deploy the React app (in react-app/) to GitHub Pages.
+# NOTE: this file must live at the REPO ROOT: .github/workflows/deploy.yml
+#
+# The deployed build is the static PWA shell only. It has no API proxy, so it
+# will show a "can't reach the API" banner until the Bullpen backend exists
+# and VITE_API_BASE is set (as a repo variable) to point at it.
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: react-app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: react-app/package-lock.json
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+        env:
+          VITE_API_BASE: ${{ vars.VITE_API_BASE }}
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: react-app/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,7 @@
+*.tsbuildinfo
+react-app/vite.config.ts.timestamp-*
+react-app/node_modules/
+react-app/dist/
+react-app/dev-dist/
+react-app/.env.local
+react-app/.env.*.local
