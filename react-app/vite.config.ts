@@ -1,5 +1,5 @@
 /// <reference types="vitest" />
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig, loadEnv, type ProxyOptions } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
@@ -23,9 +23,27 @@ export default defineConfig(({ mode }) => {
     "APCA-API-KEY-ID": env.ALPACA_KEY_ID ?? "",
     "APCA-API-SECRET-KEY": env.ALPACA_SECRET_KEY ?? "",
   };
+  // Keys pasted into the in-app Settings screen arrive as X-Alpaca-* headers
+  // (the same contract the Cloudflare relay uses). When present they replace
+  // the .env.local keys, so bring-your-own-keys can be exercised in dev.
+  const honourStoredKeys: NonNullable<ProxyOptions["configure"]> = (proxy) => {
+    proxy.on("proxyReq", (proxyReq, req) => {
+      const id = req.headers["x-alpaca-key-id"];
+      const secret = req.headers["x-alpaca-secret-key"];
+      if (typeof id === "string" && typeof secret === "string" && id && secret) {
+        proxyReq.setHeader("APCA-API-KEY-ID", id);
+        proxyReq.setHeader("APCA-API-SECRET-KEY", secret);
+      }
+      proxyReq.removeHeader("x-alpaca-key-id");
+      proxyReq.removeHeader("x-alpaca-secret-key");
+    });
+  };
   // Optional. Alpaca has no fundamentals (P/E, market cap, earnings dates);
   // a free Finnhub key unlocks them on the symbol detail panel.
   const finnhubKey = env.FINNHUB_KEY ?? "";
+  // Hosted builds have no local key; the relay holds it. FUNDAMENTALS_VIA_API=true
+  // (set in the Pages workflow) tells the client the section will work.
+  const fundamentalsOn = finnhubKey !== "" || env.FUNDAMENTALS_VIA_API === "true";
   const fundamentalsTarget = env.FUNDAMENTALS_URL || "https://finnhub.io/api/v1";
 
   return {
@@ -33,7 +51,7 @@ export default defineConfig(({ mode }) => {
     define: {
       __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
       __PAPER__: JSON.stringify(paper),
-      __FUNDAMENTALS__: JSON.stringify(finnhubKey !== ""),
+      __FUNDAMENTALS__: JSON.stringify(fundamentalsOn),
     },
     server: {
       // Alpaca's REST APIs send no CORS headers, so the browser cannot call
@@ -47,12 +65,14 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           rewrite: (p) => p.replace(/^\/api\/trading/, ""),
           headers: alpacaHeaders,
+          configure: honourStoredKeys,
         },
         "/api/data": {
           target: dataTarget,
           changeOrigin: true,
           rewrite: (p) => p.replace(/^\/api\/data/, ""),
           headers: alpacaHeaders,
+          configure: honourStoredKeys,
         },
         "/api/fundamentals": {
           target: fundamentalsTarget,

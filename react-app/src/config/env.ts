@@ -7,6 +7,9 @@
 const apiBase = (import.meta.env.VITE_API_BASE as string | undefined)?.replace(/\/$/, "") ?? "";
 
 export const env = {
+  apiBase,
+  /** Set VITE_BETA=true in the Pages build to show the Beta pill and tester hints. */
+  beta: String(import.meta.env.VITE_BETA ?? "").toLowerCase() === "true",
   tradingApi: `${apiBase}/api/trading`,
   dataApi: `${apiBase}/api/data`,
   fundamentalsApi: `${apiBase}/api/fundamentals`,

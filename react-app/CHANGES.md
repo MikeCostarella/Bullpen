@@ -1,5 +1,34 @@
 # CHANGES
 
+## 0.6.0 — Beta packaging: bring-your-own-keys, relay, Pages (2026-09-15)
+
+### Added
+- **Settings screen** (`src/features/settings/SettingsPanel.tsx`, ☰ → Tools →
+  Settings · Alpaca keys): paste an Alpaca *paper* key pair, test the
+  connection, remove it. Keys live in this browser only
+  (`src/config/credentials.ts`, `useCredentials()`), are masked on screen,
+  and ride along on every API call as `X-Alpaca-Key-Id` /
+  `X-Alpaca-Secret-Key` (`AlpacaAdapter`). The Vite dev proxy honours them
+  too, falling back to `.env.local`.
+- **Cloudflare Worker relay** (`relay/`): forwards `/api/trading` →
+  `paper-api.alpaca.markets` (hard-wired, never live), `/api/data` →
+  `data.alpaca.markets`, `/api/fundamentals` → Finnhub with a shared secret.
+  Origin allow-list, CORS + preflight, 401 with guidance when no keys are
+  sent. `node test.mjs` covers routing, CORS and paper-only. See
+  `relay/README.md` for the three-command deploy.
+- **BETA.md**: tester guide (Alpaca signup → paste keys → add to home
+  screen → what to try → how to report). ☰ → Links → *Report feedback* opens
+  a GitHub issue.
+- Beta pill next to Paper when built with `VITE_BETA=true`; `env.beta`,
+  `env.apiBase`. Menu Status shows where keys come from.
+
+### Changed
+- `deploy.yml` passes `VITE_API_BASE` (repo variable = relay URL),
+  `VITE_BETA=true` and `FUNDAMENTALS_VIA_API=true`.
+- `ErrorBanner` on 401 now points to Settings (hosted) or `.env.local` (dev);
+  the "can't reach the API" message no longer mentions a backend that isn't
+  built yet.
+
 ## 0.5.1 — Main menu, build stamp, Discover layout (2026-09-15)
 
 ### Added

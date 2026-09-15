@@ -10,6 +10,7 @@ import { AccountPanel } from "./features/account/AccountPanel";
 import { CandleChart } from "./features/chart/CandleChart";
 import { Discover } from "./features/discover/Discover";
 import { JournalView } from "./features/journal/JournalView";
+import { SettingsPanel } from "./features/settings/SettingsPanel";
 import { SymbolDetail } from "./features/symbol/SymbolDetail";
 import { Watchlist } from "./features/watchlist/Watchlist";
 import { useLocalStorage } from "./hooks/useLocalStorage";
@@ -23,6 +24,7 @@ export default function App() {
   );
   /** When set, the symbol detail panel covers the current tab. */
   const [detail, setDetail] = useState<string | null>(null);
+  const [settings, setSettings] = useState(false);
 
   const goChart = (s: string) => {
     setSymbol(s);
@@ -40,6 +42,7 @@ export default function App() {
   };
   const changeTab = (t: Tab) => {
     setDetail(null);
+    setSettings(false);
     setTab(t);
   };
 
@@ -49,14 +52,13 @@ export default function App() {
         <div className="app">
           <header className="app__header">
             <div className="app__header-left">
-              <MainMenu tab={tab} onTabChange={changeTab} />
+              <MainMenu tab={tab} onTabChange={changeTab} onOpenSettings={() => setSettings(true)} />
               <div className="app__title">Bullpen</div>
             </div>
-            <span
-              className={`pill ${env.paper ? "pill--paper" : "pill--live"}`}
-            >
-              {env.paper ? "Paper" : "LIVE"}
-            </span>
+            <div className="app__pills">
+              {env.beta && <span className="pill pill--warn">Beta</span>}
+              <span className={`pill ${env.paper ? "pill--paper" : "pill--live"}`}>{env.paper ? "Paper" : "LIVE"}</span>
+            </div>
           </header>
 
           <main className="app__main">
@@ -65,7 +67,9 @@ export default function App() {
                 This build is pointed at LIVE trading. Real money. Are you sure?
               </div>
             )}
-            {detail ? (
+            {settings ? (
+              <SettingsPanel onBack={() => setSettings(false)} />
+            ) : detail ? (
               <SymbolDetail
                 symbol={detail}
                 onBack={() => setDetail(null)}

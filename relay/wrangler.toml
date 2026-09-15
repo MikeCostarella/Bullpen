@@ -1,0 +1,20 @@
+# Bullpen relay — Cloudflare Worker. See src/index.js for what it does.
+#
+# One-time setup (from this folder):
+#   npx wrangler login                     # opens the browser once
+#   npx wrangler deploy                    # prints https://bullpen-relay.<you>.workers.dev
+#   npx wrangler secret put FINNHUB_KEY    # optional: shared fundamentals key
+#
+# Then put that URL in the GitHub repo variable VITE_API_BASE (Settings ->
+# Secrets and variables -> Actions -> Variables) and re-run the Pages deploy.
+
+name = "bullpen-relay"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+# Comma-separated. Trailing ":*" wildcards the port for local dev servers.
+ALLOWED_ORIGINS = "https://mikecostarella.github.io,http://localhost:*"
+
+[observability]
+enabled = true

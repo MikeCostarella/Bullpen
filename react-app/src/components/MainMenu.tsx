@@ -4,6 +4,7 @@ import { env } from "../config/env";
 import { fundamentalsEnabled } from "../data/fundamentals";
 import { useWatchlist } from "../features/watchlist/useWatchlist";
 import { defaultWatchlist } from "../config/watchlist";
+import { useCredentials } from "../hooks/useCredentials";
 import { fmtAgo } from "../lib/format";
 import type { Tab } from "./BottomNav";
 
@@ -23,9 +24,12 @@ const VIEWS: { tab: Tab; label: string }[] = [
   { tab: "journal", label: "Journal" },
 ];
 
+const FEEDBACK_URL = `${GITHUB_REPO_URL}/issues/new`;
+
 interface Props {
   tab: Tab;
   onTabChange: (t: Tab) => void;
+  onOpenSettings: () => void;
 }
 
 /**
@@ -35,11 +39,12 @@ interface Props {
  * on outside click / Escape. Tools keep the menu open so you can see the
  * result in Status.
  */
-export function MainMenu({ tab, onTabChange }: Props) {
+export function MainMenu({ tab, onTabChange, onOpenSettings }: Props) {
   const index = useSymbolIndex();
   const watch = useWatchlist();
+  const creds = useCredentials();
   const [open, setOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set(["Tools", "Status", "Links"]));
+  const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set(["Status", "Links"]));
   const [confirmReset, setConfirmReset] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -145,6 +150,17 @@ export function MainMenu({ tab, onTabChange }: Props) {
           </Section>
 
           <Section title="Tools">
+            <button
+              type="button"
+              role="menuitem"
+              className="menu-item"
+              onClick={() => {
+                onOpenSettings();
+                setOpen(false);
+              }}
+            >
+              Settings · Alpaca keys
+            </button>
             <button type="button" role="menuitem" className="menu-item" onClick={() => void index.refresh()}>
               Refresh symbol list
             </button>
@@ -154,7 +170,11 @@ export function MainMenu({ tab, onTabChange }: Props) {
           </Section>
 
           <Section title="Status">
-            <div className="menu-info">{env.paper ? "Paper trading (Alpaca)" : "LIVE trading (Alpaca)"}</div>
+            <div className="menu-info">
+              {env.paper ? "Paper trading (Alpaca)" : "LIVE trading (Alpaca)"}
+              {env.beta ? " · beta build" : ""}
+            </div>
+            <div className="menu-info">Keys: {creds ? "set on this device" : env.apiBase ? "not set — open Settings" : "from .env.local (dev proxy)"}</div>
             <div className="menu-info">
               {index.status === "ready"
                 ? `${index.count.toLocaleString()} symbols · updated ${index.updatedAt ? fmtAgo(new Date(index.updatedAt).toISOString()) : "—"}`
@@ -167,6 +187,7 @@ export function MainMenu({ tab, onTabChange }: Props) {
           </Section>
 
           <Section title="Links">
+            {link("Report feedback", FEEDBACK_URL)}
             {link("Alpaca Dashboard", ALPACA_DASHBOARD_URL)}
             {link("GitHub Actions", `${GITHUB_REPO_URL}/actions`)}
             {link("GitHub Repository", GITHUB_REPO_URL)}

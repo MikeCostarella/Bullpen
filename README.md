@@ -35,6 +35,14 @@ all routed through a single order pipeline with a risk guard.
 * **Broker-neutral types.** `src/broker/types.ts` knows nothing about Alpaca;
   `src/broker/alpaca/AlpacaAdapter.ts` is the only Alpaca-specific file.
 
+## Beta testers
+
+See [BETA.md](BETA.md) — the one-page getting-started guide to send people.
+The hosted app lives on GitHub Pages and talks to Alpaca through the small
+Cloudflare Worker in [`relay/`](relay/README.md) (paper-only). Testers bring
+their own free Alpaca paper keys via ☰ → Settings, so nothing secret ships
+with the build.
+
 ## Setup
 
 1. Create a free Alpaca account at <https://app.alpaca.markets>, open
@@ -109,6 +117,8 @@ your environment to override the default.
 | `ALPACA_TRADING_URL`, `ALPACA_DATA_URL` | Optional overrides (tests, local mock) |
 | `VITE_API_BASE` | Optional: URL of the Bullpen backend for deployed builds |
 | `FINNHUB_KEY` | Optional: free [Finnhub](https://finnhub.io) key for fundamentals on the detail panel |
+| `FUNDAMENTALS_VIA_API` | Build-time: `true` when the relay holds the Finnhub key (set in deploy.yml) |
+| `VITE_BETA` | Build-time: `true` shows the Beta pill and tester hints (set in deploy.yml) |
 
 ## Roadmap
 

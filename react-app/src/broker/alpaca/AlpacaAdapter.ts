@@ -15,6 +15,7 @@ import type {
   Quote,
   Timeframe,
 } from "../types";
+import { credentialHeaders } from "../../config/credentials";
 import { env } from "../../config/env";
 import { sourceFromClientOrderId } from "../../pipeline/attribution";
 
@@ -175,7 +176,8 @@ export class AlpacaAdapter implements BrokerAdapter {
     try {
       res = await fetch(`${base}${path}`, {
         ...init,
-        headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
+        // Keys stored in Settings ride along; the relay / dev proxy turn them into APCA-* headers.
+        headers: { "Content-Type": "application/json", ...credentialHeaders(), ...(init?.headers ?? {}) },
       });
     } catch (e) {
       throw new BrokerError(`Network error: ${(e as Error).message}`, 0);
