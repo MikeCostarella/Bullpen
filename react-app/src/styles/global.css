@@ -46,6 +46,7 @@ body {
 /* Bottom nav */
 .nav {
   position: fixed;
+  z-index: 30; /* above lightweight-charts' canvases, which carry their own z-index */
   left: 0;
   right: 0;
   bottom: 0;
@@ -360,15 +361,34 @@ body {
 }
 .chart-toolbar {
   display: flex;
+  flex-wrap: wrap; /* timeframe pills drop to a second line on phones */
   align-items: center;
   justify-content: space-between;
   gap: 8px;
   padding: 8px 10px;
   border-bottom: 1px solid var(--border);
 }
+.chart-toolbar__id {
+  min-width: 0;
+  flex: 1 1 180px;
+}
+.chart-toolbar__id .info-btn {
+  flex: none;
+}
+.chart-toolbar__price {
+  text-align: left;
+  margin-top: 2px;
+}
 .tf {
   display: flex;
   gap: 4px;
+  flex: none;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tf::-webkit-scrollbar {
+  display: none;
 }
 .tf button {
   appearance: none;

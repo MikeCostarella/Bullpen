@@ -133,17 +133,19 @@ export function CandleChart({ symbol, onTrade, onDetail }: Props) {
       <ErrorBanner error={error} />
       <div className="chart-wrap">
         <div className="chart-toolbar">
-          <div>
-            <span className="sym">{symbol}</span>{" "}
-            {nameOf(symbol) && <span className="sym-name">{nameOf(symbol)} </span>}
-            <button className="info-btn" type="button" title={`About ${symbol}`} onClick={() => onDetail(symbol)}>
-              i
-            </button>{" "}
+          <div className="chart-toolbar__id">
+            <div className="sym-line">
+              <span className="sym">{symbol}</span>
+              {nameOf(symbol) && <span className="sym-name">{nameOf(symbol)}</span>}
+              <button className="info-btn" type="button" title={`About ${symbol}`} onClick={() => onDetail(symbol)}>
+                i
+              </button>
+            </div>
             {last && (
-              <span className="num" style={{ marginLeft: 6 }}>
+              <div className="num chart-toolbar__price">
                 {fmtMoney(last.close)}{" "}
                 <span className={`sub ${signClass(change)}`}>{fmtPct(changePct)} over range</span>
-              </span>
+              </div>
             )}
           </div>
           <div className="tf">
