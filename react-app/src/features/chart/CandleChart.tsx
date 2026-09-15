@@ -9,6 +9,7 @@ import {
   type UTCTimestamp,
 } from "lightweight-charts";
 import { useBroker } from "../../app/BrokerContext";
+import { useSymbolIndex } from "../../app/SymbolIndexContext";
 import type { Bar, Timeframe } from "../../broker/types";
 import { ErrorBanner } from "../../components/ErrorBanner";
 import { fmtMoney, fmtPct, signClass } from "../../lib/format";
@@ -28,6 +29,7 @@ interface Props {
 
 export function CandleChart({ symbol, onTrade, onDetail }: Props) {
   const { broker } = useBroker();
+  const { nameOf } = useSymbolIndex();
   const [tf, setTf] = useState<Timeframe>("1Day");
   const [bars, setBars] = useState<Bar[]>([]);
   const [error, setError] = useState<Error>();
@@ -133,6 +135,7 @@ export function CandleChart({ symbol, onTrade, onDetail }: Props) {
         <div className="chart-toolbar">
           <div>
             <span className="sym">{symbol}</span>{" "}
+            {nameOf(symbol) && <span className="sym-name">{nameOf(symbol)} </span>}
             <button className="info-btn" type="button" title={`About ${symbol}`} onClick={() => onDetail(symbol)}>
               i
             </button>{" "}

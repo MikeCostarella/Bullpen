@@ -2,6 +2,7 @@ import { BrokerError, type BrokerAdapter } from "../BrokerAdapter";
 import type {
   Account,
   AssetInfo,
+  AssetSummary,
   Bar,
   Clock,
   NewsItem,
@@ -293,6 +294,14 @@ export class AlpacaAdapter implements BrokerAdapter {
       easyToBorrow: !!a.easy_to_borrow,
       fractionable: !!a.fractionable,
     };
+  }
+
+  async listAssets(): Promise<AssetSummary[]> {
+    const q = new URLSearchParams({ status: "active", asset_class: "us_equity" });
+    const all = await this.trading<ApcaAsset[]>(`/v2/assets?${q}`);
+    return all
+      .filter((a) => a.tradable && a.symbol && a.name)
+      .map((a) => ({ symbol: a.symbol, name: a.name, exchange: a.exchange }));
   }
 
   async getNews(symbol: string, opts: { limit?: number } = {}): Promise<NewsItem[]> {

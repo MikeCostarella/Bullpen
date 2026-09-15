@@ -1,5 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useBroker } from "../../app/BrokerContext";
+import { useSymbolIndex } from "../../app/SymbolIndexContext";
+import { SymbolSearch } from "../../components/SymbolSearch";
 import type { OrderIntent, OrderType, Side, TimeInForce } from "../../broker/types";
 import { MANUAL_SOURCE } from "../../pipeline/attribution";
 import type { PipelineResult } from "../../pipeline/orderPipeline";
@@ -20,6 +22,7 @@ interface Props {
 
 export function OrderTicket({ symbol, onSymbolChange, onDetail, onSubmitted }: Props) {
   const { broker, pipeline } = useBroker();
+  const { nameOf } = useSymbolIndex();
   const [side, setSide] = useState<Side>("buy");
   const [type, setType] = useState<OrderType>("market");
   const [tif, setTif] = useState<TimeInForce>("day");
@@ -84,15 +87,10 @@ export function OrderTicket({ symbol, onSymbolChange, onDetail, onSubmitted }: P
     <form onSubmit={submit}>
       <div className="card">
         <div className="field">
-          <label htmlFor="ot-symbol">Symbol</label>
-          <input
-            id="ot-symbol"
-            value={symbol}
-            onChange={(e) => onSymbolChange(e.target.value.toUpperCase())}
-            autoCapitalize="characters"
-            autoCorrect="off"
-            spellCheck={false}
-          />
+          <label htmlFor="ot-symbol">
+            Symbol{nameOf(symbol) ? <span className="sym-name"> · {nameOf(symbol)}</span> : null}
+          </label>
+          <SymbolSearch id="ot-symbol" value={symbol} onChange={(v) => onSymbolChange(v.toUpperCase())} onPick={onSymbolChange} />
           <div className="sub" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
             <span>
               {quote.data

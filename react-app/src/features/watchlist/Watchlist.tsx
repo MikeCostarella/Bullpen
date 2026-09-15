@@ -1,10 +1,12 @@
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import { useBroker } from "../../app/BrokerContext";
+import { useSymbolIndex } from "../../app/SymbolIndexContext";
 import { defaultWatchlist } from "../../config/watchlist";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { usePolling } from "../../hooks/usePolling";
 import { fmtMoney, fmtPct, fmtSigned, signClass } from "../../lib/format";
 import { ErrorBanner } from "../../components/ErrorBanner";
+import { SymbolSearch } from "../../components/SymbolSearch";
 
 interface Props {
   onSelect: (symbol: string) => void;
@@ -12,6 +14,7 @@ interface Props {
 
 export function Watchlist({ onSelect }: Props) {
   const { broker } = useBroker();
+  const { nameOf } = useSymbolIndex();
   const [symbols, setSymbols] = useLocalStorage<string[]>("bullpen.watchlist.v1", defaultWatchlist);
   const [draft, setDraft] = useState("");
   const [editing, setEditing] = useState(false);
@@ -19,10 +22,8 @@ export function Watchlist({ onSelect }: Props) {
   const quotes = usePolling(() => broker.getQuotes(symbols), 15_000, symbols.join(","), symbols.length > 0);
   const bySymbol = new Map((quotes.data ?? []).map((q) => [q.symbol, q]));
 
-  const add = (e: FormEvent) => {
-    e.preventDefault();
-    const s = draft.trim().toUpperCase();
-    if (s && !symbols.includes(s)) setSymbols([...symbols, s]);
+  const add = (s: string) => {
+    if (!symbols.includes(s)) setSymbols([...symbols, s]);
     setDraft("");
   };
   const remove = (s: string) => setSymbols(symbols.filter((x) => x !== s));
@@ -30,23 +31,12 @@ export function Watchlist({ onSelect }: Props) {
   return (
     <>
       <ErrorBanner error={quotes.error} />
-      <form className="inline-form" onSubmit={add}>
-        <input
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          placeholder="Add symbol"
-          autoCapitalize="characters"
-          autoCorrect="off"
-          spellCheck={false}
-          inputMode="text"
-        />
-        <button className="btn btn--ghost" type="submit" disabled={!draft.trim()}>
-          Add
-        </button>
-        <button className="btn btn--ghost" type="button" onClick={() => setEditing((v) => !v)}>
+      <div className="inline-form" style={{ alignItems: "flex-start" }}>
+        <SymbolSearch value={draft} onChange={setDraft} onPick={add} placeholder="Add symbol or company" actionLabel="Add" />
+        <button className="btn btn--ghost" type="button" style={{ minHeight: 42 }} onClick={() => setEditing((v) => !v)}>
           {editing ? "Done" : "Edit"}
         </button>
-      </form>
+      </div>
 
       <div className="card">
         {symbols.length === 0 && <div className="empty">Watchlist is empty. Add a symbol above.</div>}
@@ -54,8 +44,11 @@ export function Watchlist({ onSelect }: Props) {
           const q = bySymbol.get(s);
           return (
             <div key={s} className="row row--tap" onClick={() => (editing ? undefined : onSelect(s))}>
-              <div>
-                <div className="sym">{s}</div>
+              <div className="row__main">
+                <div className="sym-line">
+                  <span className="sym">{s}</span>
+                  {nameOf(s) && <span className="sym-name">{nameOf(s)}</span>}
+                </div>
                 <div className="sub">
                   {q ? `H ${fmtMoney(q.dayHigh)} · L ${fmtMoney(q.dayLow)}` : quotes.loading ? "loading…" : "no data"}
                 </div>

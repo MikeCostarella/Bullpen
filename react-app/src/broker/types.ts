@@ -138,6 +138,17 @@ export interface AssetInfo {
   fractionable: boolean;
 }
 
+/**
+ * One row of the broker's asset master, trimmed to what search and labels
+ * need. Thousands of these are cached client-side (see data/symbolIndex.ts),
+ * so keep it small.
+ */
+export interface AssetSummary {
+  symbol: string;
+  name: string;
+  exchange: string;
+}
+
 export interface NewsItem {
   id: string;
   headline: string;

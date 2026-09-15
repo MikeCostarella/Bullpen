@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { BrokerProvider } from "./app/BrokerContext";
+import { SymbolIndexProvider } from "./app/SymbolIndexContext";
 import { BottomNav, type Tab } from "./components/BottomNav";
 import { env } from "./config/env";
 import { benchmarkSymbol } from "./config/watchlist";
@@ -13,7 +14,10 @@ import { OrderTicket } from "./sources/manual/OrderTicket";
 
 export default function App() {
   const [tab, setTab] = useState<Tab>("watch");
-  const [symbol, setSymbol] = useLocalStorage<string>("bullpen.symbol.v1", benchmarkSymbol);
+  const [symbol, setSymbol] = useLocalStorage<string>(
+    "bullpen.symbol.v1",
+    benchmarkSymbol,
+  );
   /** When set, the symbol detail panel covers the current tab. */
   const [detail, setDetail] = useState<string | null>(null);
 
@@ -38,40 +42,57 @@ export default function App() {
 
   return (
     <BrokerProvider>
-      <div className="app">
-        <header className="app__header">
-          <div className="app__title">Bullpen</div>
-          <span className={`pill ${env.paper ? "pill--paper" : "pill--live"}`}>{env.paper ? "Paper" : "LIVE"}</span>
-        </header>
+      <SymbolIndexProvider>
+        <div className="app">
+          <header className="app__header">
+            <div className="app__title">Bullpen</div>
+            <span
+              className={`pill ${env.paper ? "pill--paper" : "pill--live"}`}
+            >
+              {env.paper ? "Paper" : "LIVE"}
+            </span>
+          </header>
 
-        <main className="app__main">
-          {!env.paper && (
-            <div className="banner banner--error">
-              This build is pointed at LIVE trading. Real money. Are you sure?
-            </div>
-          )}
-          {detail ? (
-            <SymbolDetail symbol={detail} onBack={() => setDetail(null)} onChart={goChart} onTrade={goTrade} />
-          ) : (
-            <>
-              {tab === "watch" && <Watchlist onSelect={goDetail} />}
-              {tab === "chart" && <CandleChart symbol={symbol} onTrade={goTrade} onDetail={goDetail} />}
-              {tab === "trade" && (
-                <OrderTicket
-                  symbol={symbol}
-                  onSymbolChange={setSymbol}
-                  onDetail={goDetail}
-                  onSubmitted={(r) => r.order && setTab("account")}
-                />
-              )}
-              {tab === "account" && <AccountPanel onSelect={goDetail} />}
-              {tab === "journal" && <JournalView />}
-            </>
-          )}
-        </main>
+          <main className="app__main">
+            {!env.paper && (
+              <div className="banner banner--error">
+                This build is pointed at LIVE trading. Real money. Are you sure?
+              </div>
+            )}
+            {detail ? (
+              <SymbolDetail
+                symbol={detail}
+                onBack={() => setDetail(null)}
+                onChart={goChart}
+                onTrade={goTrade}
+              />
+            ) : (
+              <>
+                {tab === "watch" && <Watchlist onSelect={goDetail} />}
+                {tab === "chart" && (
+                  <CandleChart
+                    symbol={symbol}
+                    onTrade={goTrade}
+                    onDetail={goDetail}
+                  />
+                )}
+                {tab === "trade" && (
+                  <OrderTicket
+                    symbol={symbol}
+                    onSymbolChange={setSymbol}
+                    onDetail={goDetail}
+                    onSubmitted={(r) => r.order && setTab("account")}
+                  />
+                )}
+                {tab === "account" && <AccountPanel onSelect={goDetail} />}
+                {tab === "journal" && <JournalView />}
+              </>
+            )}
+          </main>
 
-        <BottomNav tab={tab} onChange={changeTab} />
-      </div>
+          <BottomNav tab={tab} onChange={changeTab} />
+        </div>
+      </SymbolIndexProvider>
     </BrokerProvider>
   );
 }

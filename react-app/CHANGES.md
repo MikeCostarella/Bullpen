@@ -1,5 +1,28 @@
 # CHANGES
 
+## 0.3.0 — Symbol search and company names (2026-09-15)
+
+### Added
+- **Symbol type-ahead** (`src/components/SymbolSearch.tsx`): the watchlist
+  "Add" box and the Trade ticket's symbol field now search by ticker *or*
+  company name as you type ("app" → APP, AAPL, Apple Hospitality…). Pick
+  with a tap, ↑/↓ + Enter, or the Add button. Enter never submits the
+  enclosing form. Typed tickers are validated against the asset master, so
+  a typo shows "isn't a tradable US symbol" instead of a dead watchlist row.
+  Until the index has loaded the box falls back to accepting any text.
+- **Symbol index** (`src/data/symbolIndex.ts`, `src/app/SymbolIndexContext.tsx`):
+  every active, tradable US equity from `GET /v2/assets`, cached in
+  IndexedDB (`src/lib/kvStore.ts`) and refreshed in the background once a
+  day. `useSymbolIndex()` exposes `search`, `nameOf`, `lookup`, `isUnknown`.
+- **Search ranking** (`src/data/symbolSearch.ts`, pure, unit-tested):
+  exact symbol → symbol prefix → name word-prefix → name substring; OTC
+  listings sort below exchange-listed ones. `tidyName()` strips
+  "Common Stock" / "Ordinary Shares" / ADS boilerplate from Alpaca names.
+- **Company names** next to the ticker on watchlist rows, the Chart toolbar
+  and the Trade ticket label.
+- Broker layer: `AssetSummary` type and `listAssets()` on
+  `BrokerAdapter` / `AlpacaAdapter`.
+
 ## 0.2.0 — Symbol detail panel (2026-09-14)
 
 ### Added

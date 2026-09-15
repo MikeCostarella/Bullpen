@@ -1,6 +1,7 @@
 import type {
   Account,
   AssetInfo,
+  AssetSummary,
   Bar,
   Clock,
   NewsItem,
@@ -32,6 +33,8 @@ export interface BrokerAdapter {
   getQuotes(symbols: string[]): Promise<Quote[]>;
   /** Asset master lookup (name, exchange, tradability flags). Throws BrokerError 404 for unknown symbols. */
   getAsset(symbol: string): Promise<AssetInfo>;
+  /** Every active, tradable US equity the broker knows. Large (~10k rows); callers cache it. */
+  listAssets(): Promise<AssetSummary[]>;
   /** Recent headlines mentioning the symbol, newest first. */
   getNews(symbol: string, opts?: { limit?: number }): Promise<NewsItem[]>;
   getBars(symbol: string, timeframe: Timeframe, opts?: { start?: Date; end?: Date; limit?: number }): Promise<Bar[]>;
