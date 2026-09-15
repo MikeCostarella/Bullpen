@@ -1,5 +1,46 @@
 # CHANGES
 
+## 0.5.1 — Main menu, build stamp, Discover layout (2026-09-15)
+
+### Added
+- **Hamburger main menu** (`src/components/MainMenu.tsx`), left of the title,
+  in the fleet's accordion style: View (the six tabs), Tools (refresh symbol
+  list, restore default watchlist — two-tap confirm), Status (paper/live,
+  symbol count and age, fundamentals on/off, watchlist size) and Links
+  (Alpaca dashboard, GitHub Actions, repository, MyWebSite, Statehouse Home).
+- **Build stamp footer** (`src/components/BuildStamp.tsx`): © Costarella
+  Innovations, LLC and the build time with time zone, pinned above the bottom
+  nav (`--footer-h`).
+- `useSymbolIndex().updatedAt`.
+
+### Changed
+- **Discover** now leads with the browse chips — Today's movers, By location,
+  Index ETFs, Sectors, Magnificent 7, Dow 30, Bonds — and shows one card
+  below them, so nothing hides below the fold. The chosen chip is remembered.
+  Screener polling only runs while the movers chip is selected.
+- Preferred stock and depositary shares are filtered out of the movers screens.
+
+## 0.5.0 — Browse by headquarters location (2026-09-15)
+
+### Added
+- **By location** on the Discover tab (`src/features/discover/ByLocation.tsx`):
+  browse listed companies by where they're headquartered. Region chips
+  (Mahoning Valley, Northeast Ohio, Pittsburgh, Columbus, Cincinnati — by
+  3-digit ZIP prefix, `src/config/usStates.ts`) or a State + City picker with
+  counts. Rows carry live quotes, open the detail panel, and have the +/✓
+  watchlist toggle. Choice is remembered; 30 rows per page.
+- **HQ dataset build** (`scripts/build-hq.mjs`, `npm run build:hq`): downloads
+  the last four SEC *Financial Statement Data Sets* quarters (business
+  address + SIC per filer) and `company_tickers.json`, joins on CIK, and writes
+  `public/data/hq.json` (~300 KB, committed). Zero dependencies — includes a
+  minimal zip reader. Newest filing wins; `BRK-B` → `BRK.B` to match Alpaca.
+  Rebuild quarterly. Until it's run the panel explains how.
+- `src/data/hq.ts` loader (static fetch, cached) and `tally()` helper.
+
+### Changed
+- Discover's `Row` / `PriceCell` moved to `src/features/discover/rows.tsx`.
+- `<select>`s inside `.field-row` no longer overflow the card on phones.
+
 ## 0.4.0 — Discover tab (2026-09-15)
 
 ### Added

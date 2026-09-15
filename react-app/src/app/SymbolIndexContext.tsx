@@ -12,6 +12,8 @@ interface SymbolIndexCtx {
   error?: Error;
   /** Number of symbols known; 0 until loaded. */
   count: number;
+  /** When the asset master was last fetched (ms epoch), if loaded. */
+  updatedAt?: number;
   search: (query: string, limit?: number) => SymbolMatch[];
   /** Company name for a ticker, or undefined if unknown / not loaded yet. */
   nameOf: (symbol: string) => string | undefined;
@@ -73,6 +75,7 @@ export function SymbolIndexProvider({ children }: { children: ReactNode }) {
       status,
       error,
       count: assets.length,
+      updatedAt: index?.fetchedAt,
       search: (q, limit) => searchSymbols(assets, q, limit),
       nameOf: (s) => by?.get(s.toUpperCase())?.name,
       lookup: (s) => by?.get(s.toUpperCase()),

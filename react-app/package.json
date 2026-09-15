@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "build:hq": "node scripts/build-hq.mjs"
   },
   "dependencies": {
     "lightweight-charts": "^5.0.8",

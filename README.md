@@ -81,6 +81,24 @@ same two `/api/*` routes, and `VITE_API_BASE` points the PWA at it.
 | `npm run build` | `tsc -b && vite build` — the gate before every commit |
 | `npm test` | Vitest unit tests (risk guard, attribution) |
 | `npm run preview` | Serve the production build locally |
+| `npm run build:hq` | Rebuild `public/data/hq.json` (company HQ locations) from SEC filings — see below |
+
+### Company headquarters data (`npm run build:hq`)
+
+The Discover tab's **By location** view needs `react-app/public/data/hq.json`,
+which is built from two free SEC sources with no API key: the quarterly
+[Financial Statement Data Sets](https://www.sec.gov/dera/data/financial-statement-data-sets)
+(business address and SIC code for every filer) and `company_tickers.json`
+(ticker ↔ CIK). Run it once, commit the result, and rebuild every quarter or so:
+
+```
+cd C:\projects\Bullpen\react-app
+npm run build:hq
+```
+
+It downloads the last four quarters (~50–70 MB each) and takes about a minute.
+The SEC requires a User-Agent with a contact address; set `SEC_CONTACT` in
+your environment to override the default.
 
 ## Environment variables (`react-app/.env.local`)
 
@@ -90,6 +108,7 @@ same two `/api/*` routes, and `VITE_API_BASE` points the PWA at it.
 | `ALPACA_PAPER` | `true` (default) = paper-api.alpaca.markets; `false` = LIVE |
 | `ALPACA_TRADING_URL`, `ALPACA_DATA_URL` | Optional overrides (tests, local mock) |
 | `VITE_API_BASE` | Optional: URL of the Bullpen backend for deployed builds |
+| `FINNHUB_KEY` | Optional: free [Finnhub](https://finnhub.io) key for fundamentals on the detail panel |
 
 ## Roadmap
 

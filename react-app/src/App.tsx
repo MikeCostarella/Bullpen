@@ -2,6 +2,8 @@ import { useState } from "react";
 import { BrokerProvider } from "./app/BrokerContext";
 import { SymbolIndexProvider } from "./app/SymbolIndexContext";
 import { BottomNav, type Tab } from "./components/BottomNav";
+import { BuildStamp } from "./components/BuildStamp";
+import { MainMenu } from "./components/MainMenu";
 import { env } from "./config/env";
 import { benchmarkSymbol } from "./config/watchlist";
 import { AccountPanel } from "./features/account/AccountPanel";
@@ -46,7 +48,10 @@ export default function App() {
       <SymbolIndexProvider>
         <div className="app">
           <header className="app__header">
-            <div className="app__title">Bullpen</div>
+            <div className="app__header-left">
+              <MainMenu tab={tab} onTabChange={changeTab} />
+              <div className="app__title">Bullpen</div>
+            </div>
             <span
               className={`pill ${env.paper ? "pill--paper" : "pill--live"}`}
             >
@@ -92,7 +97,8 @@ export default function App() {
             )}
           </main>
 
-          <BottomNav tab={tab} onChange={changeTab} />
+          <BuildStamp />
+        <BottomNav tab={tab} onChange={changeTab} />
         </div>
       </SymbolIndexProvider>
     </BrokerProvider>
