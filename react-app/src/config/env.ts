@@ -9,6 +9,8 @@ const apiBase = (import.meta.env.VITE_API_BASE as string | undefined)?.replace(/
 export const env = {
   tradingApi: `${apiBase}/api/trading`,
   dataApi: `${apiBase}/api/data`,
+  fundamentalsApi: `${apiBase}/api/fundamentals`,
+  fundamentals: typeof __FUNDAMENTALS__ === "undefined" ? false : __FUNDAMENTALS__,
   paper: typeof __PAPER__ === "undefined" ? true : __PAPER__,
   buildTime: typeof __BUILD_TIME__ === "undefined" ? "" : __BUILD_TIME__,
 } as const;

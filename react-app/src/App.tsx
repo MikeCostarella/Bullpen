@@ -6,6 +6,7 @@ import { benchmarkSymbol } from "./config/watchlist";
 import { AccountPanel } from "./features/account/AccountPanel";
 import { CandleChart } from "./features/chart/CandleChart";
 import { JournalView } from "./features/journal/JournalView";
+import { SymbolDetail } from "./features/symbol/SymbolDetail";
 import { Watchlist } from "./features/watchlist/Watchlist";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { OrderTicket } from "./sources/manual/OrderTicket";
@@ -13,14 +14,26 @@ import { OrderTicket } from "./sources/manual/OrderTicket";
 export default function App() {
   const [tab, setTab] = useState<Tab>("watch");
   const [symbol, setSymbol] = useLocalStorage<string>("bullpen.symbol.v1", benchmarkSymbol);
+  /** When set, the symbol detail panel covers the current tab. */
+  const [detail, setDetail] = useState<string | null>(null);
 
   const goChart = (s: string) => {
     setSymbol(s);
+    setDetail(null);
     setTab("chart");
   };
   const goTrade = (s: string) => {
     setSymbol(s);
+    setDetail(null);
     setTab("trade");
+  };
+  const goDetail = (s: string) => {
+    setSymbol(s);
+    setDetail(s);
+  };
+  const changeTab = (t: Tab) => {
+    setDetail(null);
+    setTab(t);
   };
 
   return (
@@ -37,16 +50,27 @@ export default function App() {
               This build is pointed at LIVE trading. Real money. Are you sure?
             </div>
           )}
-          {tab === "watch" && <Watchlist onSelect={goChart} />}
-          {tab === "chart" && <CandleChart symbol={symbol} onTrade={goTrade} />}
-          {tab === "trade" && (
-            <OrderTicket symbol={symbol} onSymbolChange={setSymbol} onSubmitted={(r) => r.order && setTab("account")} />
+          {detail ? (
+            <SymbolDetail symbol={detail} onBack={() => setDetail(null)} onChart={goChart} onTrade={goTrade} />
+          ) : (
+            <>
+              {tab === "watch" && <Watchlist onSelect={goDetail} />}
+              {tab === "chart" && <CandleChart symbol={symbol} onTrade={goTrade} onDetail={goDetail} />}
+              {tab === "trade" && (
+                <OrderTicket
+                  symbol={symbol}
+                  onSymbolChange={setSymbol}
+                  onDetail={goDetail}
+                  onSubmitted={(r) => r.order && setTab("account")}
+                />
+              )}
+              {tab === "account" && <AccountPanel onSelect={goDetail} />}
+              {tab === "journal" && <JournalView />}
+            </>
           )}
-          {tab === "account" && <AccountPanel onSelect={goChart} />}
-          {tab === "journal" && <JournalView />}
         </main>
 
-        <BottomNav tab={tab} onChange={setTab} />
+        <BottomNav tab={tab} onChange={changeTab} />
       </div>
     </BrokerProvider>
   );

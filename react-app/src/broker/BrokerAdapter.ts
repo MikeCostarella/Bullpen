@@ -1,7 +1,9 @@
 import type {
   Account,
+  AssetInfo,
   Bar,
   Clock,
+  NewsItem,
   Order,
   OrderIntent,
   Position,
@@ -28,6 +30,10 @@ export interface BrokerAdapter {
   submitOrder(intent: OrderIntent, clientOrderId: string): Promise<Order>;
 
   getQuotes(symbols: string[]): Promise<Quote[]>;
+  /** Asset master lookup (name, exchange, tradability flags). Throws BrokerError 404 for unknown symbols. */
+  getAsset(symbol: string): Promise<AssetInfo>;
+  /** Recent headlines mentioning the symbol, newest first. */
+  getNews(symbol: string, opts?: { limit?: number }): Promise<NewsItem[]>;
   getBars(symbol: string, timeframe: Timeframe, opts?: { start?: Date; end?: Date; limit?: number }): Promise<Bar[]>;
 }
 

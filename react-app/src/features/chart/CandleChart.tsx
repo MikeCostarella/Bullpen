@@ -23,9 +23,10 @@ const TIMEFRAMES: { tf: Timeframe; label: string; lookbackDays: number }[] = [
 interface Props {
   symbol: string;
   onTrade: (symbol: string) => void;
+  onDetail: (symbol: string) => void;
 }
 
-export function CandleChart({ symbol, onTrade }: Props) {
+export function CandleChart({ symbol, onTrade, onDetail }: Props) {
   const { broker } = useBroker();
   const [tf, setTf] = useState<Timeframe>("1Day");
   const [bars, setBars] = useState<Bar[]>([]);
@@ -132,6 +133,9 @@ export function CandleChart({ symbol, onTrade }: Props) {
         <div className="chart-toolbar">
           <div>
             <span className="sym">{symbol}</span>{" "}
+            <button className="info-btn" type="button" title={`About ${symbol}`} onClick={() => onDetail(symbol)}>
+              i
+            </button>{" "}
             {last && (
               <span className="num" style={{ marginLeft: 6 }}>
                 {fmtMoney(last.close)}{" "}

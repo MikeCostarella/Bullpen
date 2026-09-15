@@ -77,7 +77,7 @@ export function Watchlist({ onSelect }: Props) {
         })}
       </div>
       <div className="footer-note">
-        Quotes from the IEX feed (free plan), refreshed every 15s while the app is visible.
+        Tap a symbol for details. Quotes from the IEX feed (free plan), refreshed every 15s while the app is visible.
       </div>
     </>
   );

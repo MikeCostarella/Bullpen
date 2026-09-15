@@ -14,10 +14,11 @@ import { usePolling } from "../../hooks/usePolling";
 interface Props {
   symbol: string;
   onSymbolChange: (s: string) => void;
+  onDetail: (s: string) => void;
   onSubmitted: (r: PipelineResult) => void;
 }
 
-export function OrderTicket({ symbol, onSymbolChange, onSubmitted }: Props) {
+export function OrderTicket({ symbol, onSymbolChange, onDetail, onSubmitted }: Props) {
   const { broker, pipeline } = useBroker();
   const [side, setSide] = useState<Side>("buy");
   const [type, setType] = useState<OrderType>("market");
@@ -92,10 +93,17 @@ export function OrderTicket({ symbol, onSymbolChange, onSubmitted }: Props) {
             autoCorrect="off"
             spellCheck={false}
           />
-          <div className="sub">
-            {quote.data
-              ? `Last ${fmtMoney(quote.data.last)} · Bid ${fmtMoney(quote.data.bid)} · Ask ${fmtMoney(quote.data.ask)}`
-              : "no quote"}
+          <div className="sub" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+            <span>
+              {quote.data
+                ? `Last ${fmtMoney(quote.data.last)} · Bid ${fmtMoney(quote.data.bid)} · Ask ${fmtMoney(quote.data.ask)}`
+                : "no quote"}
+            </span>
+            {symbol && (
+              <button className="info-btn" type="button" title={`About ${symbol}`} onClick={() => onDetail(symbol)}>
+                i
+              </button>
+            )}
           </div>
         </div>
 

@@ -23,12 +23,17 @@ export default defineConfig(({ mode }) => {
     "APCA-API-KEY-ID": env.ALPACA_KEY_ID ?? "",
     "APCA-API-SECRET-KEY": env.ALPACA_SECRET_KEY ?? "",
   };
+  // Optional. Alpaca has no fundamentals (P/E, market cap, earnings dates);
+  // a free Finnhub key unlocks them on the symbol detail panel.
+  const finnhubKey = env.FINNHUB_KEY ?? "";
+  const fundamentalsTarget = env.FUNDAMENTALS_URL || "https://finnhub.io/api/v1";
 
   return {
     base: BASE,
     define: {
       __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
       __PAPER__: JSON.stringify(paper),
+      __FUNDAMENTALS__: JSON.stringify(finnhubKey !== ""),
     },
     server: {
       // Alpaca's REST APIs send no CORS headers, so the browser cannot call
@@ -48,6 +53,12 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           rewrite: (p) => p.replace(/^\/api\/data/, ""),
           headers: alpacaHeaders,
+        },
+        "/api/fundamentals": {
+          target: fundamentalsTarget,
+          changeOrigin: true,
+          rewrite: (p) => p.replace(/^\/api\/fundamentals/, ""),
+          headers: { "X-Finnhub-Token": finnhubKey },
         },
       },
     },

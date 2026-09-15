@@ -1,8 +1,10 @@
 import { BrokerError, type BrokerAdapter } from "../BrokerAdapter";
 import type {
   Account,
+  AssetInfo,
   Bar,
   Clock,
+  NewsItem,
   Order,
   OrderIntent,
   OrderStatus,
@@ -64,6 +66,27 @@ interface ApcaBar {
   l: number;
   c: number;
   v: number;
+}
+interface ApcaAsset {
+  symbol: string;
+  name: string;
+  exchange: string;
+  class: string;
+  status: string;
+  tradable: boolean;
+  marginable: boolean;
+  shortable: boolean;
+  easy_to_borrow: boolean;
+  fractionable: boolean;
+}
+interface ApcaNews {
+  id: number;
+  headline: string;
+  summary: string;
+  source: string;
+  url: string;
+  created_at: string;
+  symbols: string[];
 }
 interface ApcaSnapshot {
   latestTrade?: { p: number; t: string };
@@ -244,6 +267,7 @@ export class AlpacaAdapter implements BrokerAdapter {
           last,
           bid: snap.latestQuote?.bp,
           ask: snap.latestQuote?.ap,
+          open: snap.dailyBar?.o,
           change,
           changePct: prevClose ? (change / prevClose) * 100 : 0,
           prevClose,
@@ -253,6 +277,41 @@ export class AlpacaAdapter implements BrokerAdapter {
           asOf: snap.latestTrade?.t ?? snap.dailyBar?.t ?? new Date().toISOString(),
         };
       });
+  }
+
+  async getAsset(symbol: string): Promise<AssetInfo> {
+    const a = await this.trading<ApcaAsset>(`/v2/assets/${encodeURIComponent(symbol)}`);
+    return {
+      symbol: a.symbol,
+      name: a.name,
+      exchange: a.exchange,
+      assetClass: a.class,
+      status: a.status,
+      tradable: !!a.tradable,
+      marginable: !!a.marginable,
+      shortable: !!a.shortable,
+      easyToBorrow: !!a.easy_to_borrow,
+      fractionable: !!a.fractionable,
+    };
+  }
+
+  async getNews(symbol: string, opts: { limit?: number } = {}): Promise<NewsItem[]> {
+    const q = new URLSearchParams({
+      symbols: symbol,
+      limit: String(opts.limit ?? 15),
+      sort: "desc",
+      include_content: "false",
+    });
+    const res = await this.data<{ news: ApcaNews[] }>(`/v1beta1/news?${q}`);
+    return (res.news ?? []).map((n) => ({
+      id: String(n.id),
+      headline: n.headline,
+      summary: n.summary || undefined,
+      source: n.source,
+      url: n.url,
+      createdAt: n.created_at,
+      symbols: n.symbols ?? [],
+    }));
   }
 
   async getBars(

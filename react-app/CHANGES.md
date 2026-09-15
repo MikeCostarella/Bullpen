@@ -1,5 +1,36 @@
 # CHANGES
 
+## 0.2.0 — Symbol detail panel (2026-09-14)
+
+### Added
+- **Symbol detail panel** (`src/features/symbol/SymbolDetail.tsx`): tap any
+  watchlist or position row, or the ⓘ button on the Chart and Trade screens.
+  Shows identity (name, exchange, asset class, tradable / shortable /
+  marginable / fractionable flags), live price, your position if any,
+  today's open / high / low / prev close / bid / ask / spread / volume /
+  relative volume, 52-week range with position marker, 1W-1M-3M-6M-YTD-1Y
+  performance, 20d/60d average volume, fundamentals, and recent news.
+  Chart and Trade buttons in the panel bar keep the old flows one tap away.
+- **Broker layer**: `AssetInfo` and `NewsItem` types; `getAsset()` and
+  `getNews()` on `BrokerAdapter` / `AlpacaAdapter` (`/v2/assets`,
+  `/v1beta1/news`); `Quote.open`.
+- **Range stats** (`src/features/symbol/stats.ts`, pure, unit-tested):
+  52-week high/low/position, performance windows, volume averages from
+  daily bars.
+- **Optional fundamentals** via Finnhub (`src/data/fundamentals.ts`): set
+  `FINNHUB_KEY` in `.env.local` and the dev proxy serves
+  `/api/fundamentals` (key injected server-side, never bundled). Market cap,
+  P/E, EPS, dividend yield, beta, shares outstanding, IPO date, industry,
+  website, logo, next earnings date. Without a key the panel explains how
+  to enable it.
+- `useAsync` hook (one-shot loader keyed by symbol), `fmtCompact`,
+  `fmtAgo`, `fmtDate` formatters.
+
+### Changed
+- Watchlist and Account rows now open the detail panel instead of jumping
+  straight to the chart.
+
+
 ## 0.1.0 — Milestone 1: manual paper trading (2026-09-13)
 
 Initial scaffold.

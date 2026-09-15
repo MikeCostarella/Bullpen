@@ -110,6 +110,8 @@ export interface Quote {
   last: number;
   bid?: number;
   ask?: number;
+  /** Today's open. */
+  open?: number;
   /** Today's daily bar close-to-date vs previous close. */
   change: number;
   changePct: number;
@@ -118,4 +120,30 @@ export interface Quote {
   dayLow?: number;
   volume?: number;
   asOf: string;
+}
+
+/** Static facts about a tradable instrument (from the broker's asset master). */
+export interface AssetInfo {
+  symbol: string;
+  name: string;
+  exchange: string;
+  /** e.g. "us_equity", "crypto". */
+  assetClass: string;
+  /** Broker status, e.g. "active" | "inactive". */
+  status: string;
+  tradable: boolean;
+  marginable: boolean;
+  shortable: boolean;
+  easyToBorrow: boolean;
+  fractionable: boolean;
+}
+
+export interface NewsItem {
+  id: string;
+  headline: string;
+  summary?: string;
+  source: string;
+  url: string;
+  createdAt: string;
+  symbols: string[];
 }
