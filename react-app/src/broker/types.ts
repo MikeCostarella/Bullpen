@@ -149,6 +149,21 @@ export interface AssetSummary {
   exchange: string;
 }
 
+/** One row of the broker's top-gainers / top-losers screen. */
+export interface Mover {
+  symbol: string;
+  price: number;
+  change: number;
+  changePct: number;
+}
+
+/** One row of the broker's most-active screen (by share volume). */
+export interface ActiveStock {
+  symbol: string;
+  volume: number;
+  tradeCount: number;
+}
+
 export interface NewsItem {
   id: string;
   headline: string;

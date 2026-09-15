@@ -1,5 +1,30 @@
 # CHANGES
 
+## 0.4.0 — Discover tab (2026-09-15)
+
+### Added
+- **Discover tab** (`src/features/discover/Discover.tsx`, new bottom-nav
+  entry between Watch and Chart): ways in that don't start from a ticker you
+  already know.
+  - *Today's movers*: Gainers / Losers / Most active from Alpaca's screener
+    (`/v1beta1/screener/stocks/movers` and `/most-actives`), refreshed every
+    60s. Warrants, units, rights and sub-$1 names are filtered out client-side
+    (40 fetched, 10 shown) so the lists aren't pure penny-stock noise. Most
+    active rows also carry live price/change via a snapshot call.
+  - *Curated groups* (`src/config/discover.ts`, chips): Index ETFs, the 11
+    S&P sector ETFs, Magnificent 7, Dow 30, and bonds/gold/oil/dollar/bitcoin
+    ETFs — each with live quotes, a one-line blurb, and "Add all".
+  - Every row opens the symbol detail panel; the trailing **+ / ✓** button
+    adds or removes the symbol from the watchlist in place.
+- Broker layer: `Mover` / `ActiveStock` types, `getMovers()` and
+  `getMostActive()` on `BrokerAdapter` / `AlpacaAdapter`.
+- `useWatchlist()` hook (`src/features/watchlist/useWatchlist.ts`) — the
+  watchlist's localStorage state with `add` / `remove` / `has` / `toggle`,
+  shared by the Watch and Discover tabs.
+
+### Changed
+- Bottom nav is now six tabs (label font 11px).
+
 ## 0.3.0 — Symbol search and company names (2026-09-15)
 
 ### Added

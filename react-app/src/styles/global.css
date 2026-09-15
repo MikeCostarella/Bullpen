@@ -52,7 +52,7 @@ body {
   height: calc(var(--nav-h) + var(--safe-bottom));
   padding-bottom: var(--safe-bottom);
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   background: var(--surface);
   border-top: 1px solid var(--border);
 }
@@ -60,9 +60,10 @@ body {
   appearance: none;
   background: none;
   border: 0;
+  padding: 0;
   color: var(--text-muted);
   font: inherit;
-  font-size: 12px;
+  font-size: 11px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -678,4 +679,65 @@ body {
 .row__main {
   min-width: 0;
   flex: 1;
+}
+
+/* Discover */
+.add-btn {
+  appearance: none;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.add-btn:active {
+  background: var(--surface-2);
+}
+.add-btn--in {
+  color: var(--up);
+  border-color: transparent;
+  font-size: 15px;
+}
+.chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 0 10px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.chips::-webkit-scrollbar {
+  display: none;
+}
+.chip {
+  appearance: none;
+  flex: none;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.chip--active {
+  background: var(--surface-2);
+  color: var(--text);
+  border-color: var(--text-faint);
+}
+.card .seg {
+  margin-bottom: 4px;
 }

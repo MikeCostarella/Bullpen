@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useBroker } from "../../app/BrokerContext";
 import { useSymbolIndex } from "../../app/SymbolIndexContext";
-import { defaultWatchlist } from "../../config/watchlist";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { useWatchlist } from "./useWatchlist";
 import { usePolling } from "../../hooks/usePolling";
 import { fmtMoney, fmtPct, fmtSigned, signClass } from "../../lib/format";
 import { ErrorBanner } from "../../components/ErrorBanner";
@@ -15,7 +14,7 @@ interface Props {
 export function Watchlist({ onSelect }: Props) {
   const { broker } = useBroker();
   const { nameOf } = useSymbolIndex();
-  const [symbols, setSymbols] = useLocalStorage<string[]>("bullpen.watchlist.v1", defaultWatchlist);
+  const { symbols, add: addToList, remove } = useWatchlist();
   const [draft, setDraft] = useState("");
   const [editing, setEditing] = useState(false);
 
@@ -23,10 +22,9 @@ export function Watchlist({ onSelect }: Props) {
   const bySymbol = new Map((quotes.data ?? []).map((q) => [q.symbol, q]));
 
   const add = (s: string) => {
-    if (!symbols.includes(s)) setSymbols([...symbols, s]);
+    addToList(s);
     setDraft("");
   };
-  const remove = (s: string) => setSymbols(symbols.filter((x) => x !== s));
 
   return (
     <>

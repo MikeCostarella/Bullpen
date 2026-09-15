@@ -6,6 +6,7 @@ import { env } from "./config/env";
 import { benchmarkSymbol } from "./config/watchlist";
 import { AccountPanel } from "./features/account/AccountPanel";
 import { CandleChart } from "./features/chart/CandleChart";
+import { Discover } from "./features/discover/Discover";
 import { JournalView } from "./features/journal/JournalView";
 import { SymbolDetail } from "./features/symbol/SymbolDetail";
 import { Watchlist } from "./features/watchlist/Watchlist";
@@ -69,6 +70,7 @@ export default function App() {
             ) : (
               <>
                 {tab === "watch" && <Watchlist onSelect={goDetail} />}
+              {tab === "discover" && <Discover onSelect={goDetail} />}
                 {tab === "chart" && (
                   <CandleChart
                     symbol={symbol}

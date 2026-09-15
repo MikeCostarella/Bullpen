@@ -1,9 +1,11 @@
 import type {
   Account,
+  ActiveStock,
   AssetInfo,
   AssetSummary,
   Bar,
   Clock,
+  Mover,
   NewsItem,
   Order,
   OrderIntent,
@@ -35,6 +37,10 @@ export interface BrokerAdapter {
   getAsset(symbol: string): Promise<AssetInfo>;
   /** Every active, tradable US equity the broker knows. Large (~10k rows); callers cache it. */
   listAssets(): Promise<AssetSummary[]>;
+  /** Today's biggest percentage gainers and losers (last session when the market is closed). */
+  getMovers(top?: number): Promise<{ gainers: Mover[]; losers: Mover[]; asOf?: string }>;
+  /** Today's most traded symbols by share volume. */
+  getMostActive(top?: number): Promise<{ stocks: ActiveStock[]; asOf?: string }>;
   /** Recent headlines mentioning the symbol, newest first. */
   getNews(symbol: string, opts?: { limit?: number }): Promise<NewsItem[]>;
   getBars(symbol: string, timeframe: Timeframe, opts?: { start?: Date; end?: Date; limit?: number }): Promise<Bar[]>;

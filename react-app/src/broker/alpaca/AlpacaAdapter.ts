@@ -1,10 +1,12 @@
 import { BrokerError, type BrokerAdapter } from "../BrokerAdapter";
 import type {
   Account,
+  ActiveStock,
   AssetInfo,
   AssetSummary,
   Bar,
   Clock,
+  Mover,
   NewsItem,
   Order,
   OrderIntent,
@@ -88,6 +90,21 @@ interface ApcaNews {
   url: string;
   created_at: string;
   symbols: string[];
+}
+interface ApcaMover {
+  symbol: string;
+  percent_change: number;
+  change: number;
+  price: number;
+}
+interface ApcaMovers {
+  gainers: ApcaMover[];
+  losers: ApcaMover[];
+  last_updated?: string;
+}
+interface ApcaMostActives {
+  most_actives: { symbol: string; volume: number; trade_count: number }[];
+  last_updated?: string;
 }
 interface ApcaSnapshot {
   latestTrade?: { p: number; t: string };
@@ -302,6 +319,31 @@ export class AlpacaAdapter implements BrokerAdapter {
     return all
       .filter((a) => a.tradable && a.symbol && a.name)
       .map((a) => ({ symbol: a.symbol, name: a.name, exchange: a.exchange }));
+  }
+
+  async getMovers(top = 10): Promise<{ gainers: Mover[]; losers: Mover[]; asOf?: string }> {
+    const q = new URLSearchParams({ top: String(top) });
+    const res = await this.data<ApcaMovers>(`/v1beta1/screener/stocks/movers?${q}`);
+    const map = (m: ApcaMover): Mover => ({
+      symbol: m.symbol,
+      price: num(m.price),
+      change: num(m.change),
+      changePct: num(m.percent_change),
+    });
+    return { gainers: (res.gainers ?? []).map(map), losers: (res.losers ?? []).map(map), asOf: res.last_updated };
+  }
+
+  async getMostActive(top = 10): Promise<{ stocks: ActiveStock[]; asOf?: string }> {
+    const q = new URLSearchParams({ by: "volume", top: String(top) });
+    const res = await this.data<ApcaMostActives>(`/v1beta1/screener/stocks/most-actives?${q}`);
+    return {
+      stocks: (res.most_actives ?? []).map((a) => ({
+        symbol: a.symbol,
+        volume: num(a.volume),
+        tradeCount: num(a.trade_count),
+      })),
+      asOf: res.last_updated,
+    };
   }
 
   async getNews(symbol: string, opts: { limit?: number } = {}): Promise<NewsItem[]> {

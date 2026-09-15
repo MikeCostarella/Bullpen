@@ -1,9 +1,15 @@
-export type Tab = "watch" | "chart" | "trade" | "account" | "journal";
+export type Tab = "watch" | "discover" | "chart" | "trade" | "account" | "journal";
 
 const ICONS: Record<Tab, JSX.Element> = {
   watch: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M4 6h16M4 12h16M4 18h10" />
+    </svg>
+  ),
+  discover: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M15.5 8.5l-2 5-5 2 2-5z" />
     </svg>
   ),
   chart: (
@@ -31,6 +37,7 @@ const ICONS: Record<Tab, JSX.Element> = {
 
 const LABELS: Record<Tab, string> = {
   watch: "Watch",
+  discover: "Discover",
   chart: "Chart",
   trade: "Trade",
   account: "Account",
