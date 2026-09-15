@@ -43,6 +43,49 @@ Cloudflare Worker in [`relay/`](relay/README.md) (paper-only). Testers bring
 their own free Alpaca paper keys via ☰ → Settings, so nothing secret ships
 with the build.
 
+### Deploying the hosted beta (one-time setup)
+
+The pieces: GitHub Pages serves the static PWA; the Cloudflare Worker in
+`relay/` forwards `/api/*` to Alpaca. The app only learns the relay's URL at
+**build time**, through the `VITE_API_BASE` variable — forget it and the
+hosted app shows "Can't reach the API (404)".
+
+1. **Deploy the relay** (needs a free Cloudflare account; `wrangler login`
+   opens the browser to create/sign in — GitHub login works):
+   ```
+   cd C:\projects\Bullpen\relay
+   npx wrangler login
+   npx wrangler deploy
+   npx wrangler secret put FINNHUB_KEY
+   ```
+   The first deploy asks you to register a `workers.dev` subdomain
+   (`mikecostarella`). It prints the relay URL:
+   `https://bullpen-relay.mikecostarella.workers.dev`. A new subdomain's TLS
+   certificate takes 5–15 minutes; until then the browser shows
+   `ERR_SSL_VERSION_OR_CIPHER_MISMATCH`. Check `<url>/health` afterwards.
+2. **Repo must be public** — GitHub Pages does not publish private repos on
+   the free plan. Before flipping it: regenerate the Alpaca paper keys
+   (app.alpaca.markets → Paper Trading → API Keys → Regenerate), put the new
+   pair in `react-app/.env.local`, and make sure `.env.example` holds only
+   placeholders. Then Settings → General → Danger Zone → Change visibility.
+3. **Pages source**: repo Settings → Pages → Build and deployment → Source =
+   **GitHub Actions**.
+4. **Relay URL variable**: repo Settings → Secrets and variables → Actions →
+   **Variables** tab (not Secrets) → *New repository variable* →
+   Name `VITE_API_BASE`, Value the relay URL with no trailing slash → *Add
+   variable*. `deploy.yml` reads it as `vars.VITE_API_BASE`.
+5. **Build**: push to `main`, or Actions → *Deploy to GitHub Pages* → *Run
+   workflow*. Any time the variable changes, re-run the workflow — the value
+   is baked into the bundle.
+6. **Verify** at https://mikecostarella.github.io/Bullpen/ — hard-refresh
+   (Ctrl+F5) because the PWA service worker caches the previous build. A
+   correct fresh build shows the amber "No Alpaca keys yet — open Menu →
+   Settings" banner; paste paper keys there and *Test connection*.
+
+Later changes: app code → just push (Pages redeploys). Relay code or
+`ALLOWED_ORIGINS` → `npx wrangler deploy` from `relay/`. Ending the beta →
+remove `VITE_BETA` from `deploy.yml`.
+
 ## Setup
 
 1. Create a free Alpaca account at <https://app.alpaca.markets>, open
