@@ -3,6 +3,7 @@ import { useBroker } from "../../app/BrokerContext";
 import { useSymbolIndex } from "../../app/SymbolIndexContext";
 import type { Quote } from "../../broker/types";
 import { ErrorBanner } from "../../components/ErrorBanner";
+import { SymbolSearch } from "../../components/SymbolSearch";
 import { discoverGroups } from "../../config/discover";
 import { isJunk } from "../../data/junk";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
@@ -39,6 +40,7 @@ export function Discover({ onSelect }: Props) {
   const { nameOf } = useSymbolIndex();
   const watch = useWatchlist();
   const [screen, setScreen] = useState<Screen>("gainers");
+  const [query, setQuery] = useState("");
   const [groupId, setGroupId] = useLocalStorage<string>("bullpen.discover.chip.v1", MOVERS);
   const group = discoverGroups.find((g) => g.id === groupId) ?? discoverGroups[0];
   const isGroup = groupId !== MOVERS && groupId !== LOCATION;
@@ -77,6 +79,20 @@ export function Discover({ onSelect }: Props) {
   return (
     <>
       <ErrorBanner error={movers.error ?? actives.error ?? groupQuotes.error} />
+
+      {/* Same type-ahead as the watchlist, but picking opens the detail panel
+          instead of adding a row — Discover is for looking, not collecting. */}
+      <div className="inline-form">
+        <SymbolSearch
+          value={query}
+          onChange={setQuery}
+          onPick={(s) => {
+            setQuery("");
+            onSelect(s);
+          }}
+          placeholder="Find a company or ticker"
+        />
+      </div>
 
       <div className="chips">
         <button type="button" className={`chip ${groupId === MOVERS ? "chip--active" : ""}`} onClick={() => setGroupId(MOVERS)}>
