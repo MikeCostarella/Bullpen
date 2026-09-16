@@ -120,10 +120,18 @@ export function ByLocation({ onSelect }: Props) {
           <label htmlFor="loc-state">State</label>
           <select
             id="loc-state"
-            value={pick.state}
+            value={region ? "" : pick.state}
             onChange={(e) => choose({ region: "", state: e.target.value, city: "" })}
             disabled={!data}
           >
+            {/* While a region chip is active the selects go blank, so only one
+                control ever looks like it's in charge. Picking a state here
+                clears the chip. */}
+            {region && (
+              <option value="" disabled>
+                Or pick a state…
+              </option>
+            )}
             {states.map(([code, n]) => (
               <option key={code} value={code}>
                 {US_STATES[code]} ({n})
@@ -135,11 +143,11 @@ export function ByLocation({ onSelect }: Props) {
           <label htmlFor="loc-city">City</label>
           <select
             id="loc-city"
-            value={pick.region ? "" : pick.city}
+            value={region ? "" : pick.city}
             onChange={(e) => choose({ region: "", city: e.target.value })}
-            disabled={!data}
+            disabled={!data || !!region}
           >
-            <option value="">All of {US_STATES[pick.state] ?? pick.state}</option>
+            <option value="">{region ? "—" : `All of ${US_STATES[pick.state] ?? pick.state}`}</option>
             {cities.map(([city, n]) => (
               <option key={city} value={city}>
                 {city} ({n})
