@@ -82,6 +82,7 @@ export function OrderTicket({ symbol, onSymbolChange, onDetail, onSubmitted }: P
   const est = ref && Number(qty) > 0 ? Number(qty) * (type === "limit" ? Number(limitPrice) || ref : ref) : undefined;
   const needsLimit = type === "limit" || type === "stop_limit";
   const needsStop = type === "stop" || type === "stop_limit";
+  const reasonMissing = reason.trim().length === 0;
 
   return (
     <form onSubmit={submit}>
@@ -152,14 +153,24 @@ export function OrderTicket({ symbol, onSymbolChange, onDetail, onSubmitted }: P
           </div>
         </div>
 
-        <div className="field">
-          <label htmlFor="ot-reason">Why? (required — goes in the journal)</label>
+        <div className={`field field--required ${reasonMissing ? "field--missing" : ""}`}>
+          <label htmlFor="ot-reason">
+            Why? <span className="req" aria-hidden="true">*</span>
+            <span className="sub" style={{ marginLeft: 6 }}>required — goes in the journal</span>
+          </label>
           <textarea
             id="ot-reason"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder="What's the thesis? What would make you wrong? Where's the exit?"
+            required
+            aria-required="true"
+            aria-invalid={reasonMissing}
+            aria-describedby="ot-reason-hint"
           />
+          <div id="ot-reason-hint" className={`field-hint ${reasonMissing ? "field-hint--missing" : ""}`}>
+            {reasonMissing ? "Required — the journal needs a reason before you can trade." : "Saved with the order in the journal."}
+          </div>
         </div>
 
         {preview && (
