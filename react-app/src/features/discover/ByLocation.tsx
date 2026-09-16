@@ -4,6 +4,7 @@ import { useSymbolIndex } from "../../app/SymbolIndexContext";
 import { ErrorBanner } from "../../components/ErrorBanner";
 import { REGIONS, US_STATES } from "../../config/usStates";
 import { HqMissingError, loadHq, tally, type HqRow } from "../../data/hq";
+import { isJunk } from "../../data/junk";
 import { useAsync } from "../../hooks/useAsync";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { usePolling } from "../../hooks/usePolling";
@@ -36,6 +37,7 @@ export function ByLocation({ onSelect }: Props) {
   const watch = useWatchlist();
   const [pick, setPick] = useLocalStorage<Pick>("bullpen.discover.location.v1", DEFAULT_PICK);
   const [limit, setLimit] = useState(PAGE);
+  const [hideJunk, setHideJunk] = useLocalStorage<boolean>("bullpen.discover.location.hideJunk.v1", true);
 
   const hq = useAsync(() => loadHq(), "hq");
   const data = hq.data;
@@ -49,14 +51,18 @@ export function ByLocation({ onSelect }: Props) {
   );
 
   const region = REGIONS.find((r) => r.id === pick.region);
-  const matches = useMemo(() => {
+  const { matches, hidden } = useMemo(() => {
     let rows: HqRow[];
     if (region) rows = usRows.filter((r) => region.zip3.some((z) => r.zip.startsWith(z)));
     else rows = usRows.filter((r) => r.state === pick.state && (!pick.city || r.city === pick.city));
     // Drop tickers the broker can't trade (delisted, OTC-only when the index excludes them, …).
     if (index.status === "ready") rows = rows.filter((r) => !index.isUnknown(r.symbol));
-    return rows.sort((a, b) => a.city.localeCompare(b.city) || a.symbol.localeCompare(b.symbol));
-  }, [usRows, region, pick.state, pick.city, index]);
+    // Warrants, units and SPAC shells: hidden by default, counted so the toggle explains itself.
+    const before = rows.length;
+    if (hideJunk) rows = rows.filter((r) => !isJunk(r.symbol, index.nameOf(r.symbol)));
+    rows.sort((a, b) => a.city.localeCompare(b.city) || a.symbol.localeCompare(b.symbol));
+    return { matches: rows, hidden: before - rows.length };
+  }, [usRows, region, pick.state, pick.city, index, hideJunk]);
 
   const shown = matches.slice(0, limit);
   const shownSymbols = shown.map((r) => r.symbol);
@@ -143,8 +149,14 @@ export function ByLocation({ onSelect }: Props) {
         </div>
       </div>
 
-      <div className="sub" style={{ marginBottom: 6 }}>
-        {data ? `${matches.length} listed compan${matches.length === 1 ? "y" : "ies"} headquartered in ${title}` : "loading…"}
+      <div className="sub" style={{ marginBottom: 6, display: "flex", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
+        <span>
+          {data ? `${matches.length} listed compan${matches.length === 1 ? "y" : "ies"} headquartered in ${title}` : "loading…"}
+        </span>
+        <label className="check">
+          <input type="checkbox" checked={hideJunk} onChange={(e) => setHideJunk(e.target.checked)} />
+          Hide warrants, units &amp; SPAC shells{hideJunk && hidden > 0 ? ` (${hidden} hidden)` : ""}
+        </label>
       </div>
 
       {shown.map((r) => (

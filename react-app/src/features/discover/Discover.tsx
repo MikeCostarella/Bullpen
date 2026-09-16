@@ -4,6 +4,7 @@ import { useSymbolIndex } from "../../app/SymbolIndexContext";
 import type { Quote } from "../../broker/types";
 import { ErrorBanner } from "../../components/ErrorBanner";
 import { discoverGroups } from "../../config/discover";
+import { isJunk } from "../../data/junk";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { usePolling } from "../../hooks/usePolling";
 import { fmtAgo, fmtCompact, fmtMoney } from "../../lib/format";
@@ -19,9 +20,7 @@ type Screen = "gainers" | "losers" | "active";
 const SHOW = 10;
 /** Ask for more than we show so there is something left after filtering. */
 const FETCH = 40;
-/** Warrants, units, rights and sub-$1 names dominate raw market-wide screens and teach nothing. */
-const JUNK_SYMBOL = /[.\/]/; // e.g. SLND.WS, ABC.U
-const JUNK_NAME = /\b(warrants?|rights?|units?|preferred|depositary)\b/i;
+/** Sub-$1 names dominate raw market-wide screens and teach nothing; see data/junk.ts for the rest. */
 const MIN_PRICE = 1;
 
 interface Props {
@@ -47,7 +46,7 @@ export function Discover({ onSelect }: Props) {
   const movers = usePolling(() => broker.getMovers(FETCH), 60_000, "movers", groupId === MOVERS);
   const actives = usePolling(() => broker.getMostActive(FETCH), 60_000, "actives", groupId === MOVERS);
   const keep = (symbol: string, price?: number) =>
-    !JUNK_SYMBOL.test(symbol) && !JUNK_NAME.test(nameOf(symbol) ?? "") && (price === undefined || price >= MIN_PRICE);
+    !isJunk(symbol, nameOf(symbol)) && (price === undefined || price >= MIN_PRICE);
   const activeSymbols = (actives.data?.stocks ?? [])
     .filter((s) => keep(s.symbol))
     .slice(0, SHOW * 2)

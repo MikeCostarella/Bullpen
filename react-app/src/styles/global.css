@@ -922,3 +922,16 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* Inline checkbox label (e.g. Discover → By location filters) */
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+.check input {
+  accent-color: var(--accent);
+  margin: 0;
+}
