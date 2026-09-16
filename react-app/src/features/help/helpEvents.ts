@@ -19,3 +19,10 @@ export type HelpSection =
 export function openHelp(section?: HelpSection): void {
   window.dispatchEvent(new CustomEvent<HelpSection | undefined>(HELP_EVENT, { detail: section }));
 }
+
+/** Same idea for Settings: a banner that says "open Settings" can just do it. */
+export const SETTINGS_EVENT = "bullpen:settings";
+
+export function openSettings(): void {
+  window.dispatchEvent(new Event(SETTINGS_EVENT));
+}

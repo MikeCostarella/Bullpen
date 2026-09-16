@@ -44,8 +44,35 @@ body {
 }
 .app__pills {
   display: flex;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
   flex-shrink: 0;
+}
+.help-btn {
+  appearance: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--accent);
+  font: inherit;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, background 0.2s;
+}
+.help-btn:hover,
+.help-btn--on {
+  border-color: var(--accent);
+}
+.help-btn--on {
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 .app__header-left {
   display: flex;
@@ -1007,7 +1034,55 @@ body {
   border: 0;
   padding: 0;
   font: inherit;
-  color: var(--info);
+  font-weight: 600;
+  color: inherit;
   text-decoration: underline;
+  text-underline-offset: 2px;
   cursor: pointer;
+}
+.linklike:hover {
+  color: var(--text);
+}
+
+/* ===== Help drawer: non-modal, right-hand side ===== */
+.help-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: calc(var(--nav-h) + var(--footer-h) + var(--safe-bottom));
+  width: min(var(--help-w), 100vw);
+  z-index: 25; /* under the menu dropdown (1900), over content */
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  border-left: 1px solid var(--border);
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.4);
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.help-drawer__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex: none;
+}
+.help-drawer__body {
+  flex: 1;
+  overflow-y: auto;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  padding: 4px 16px 16px;
+}
+/* Desktop: make room so the drawer covers nothing. */
+@media (min-width: 900px) {
+  .app--help .app__main {
+    padding-right: calc(16px + var(--help-w));
+  }
+  .app--help .app__header {
+    padding-right: calc(16px + var(--help-w));
+  }
 }

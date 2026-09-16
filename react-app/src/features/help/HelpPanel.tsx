@@ -43,9 +43,12 @@ function Section({ id, title, isOpen, onToggle, detailsRef, children }: SectionP
 
 /**
  * In-app help: what Bullpen is, exact setup steps, what each screen does,
- * and a short glossary. Sections are <details> so they collapse like the
- * fleet's accordion menus and deep-link by id. Update as features land —
- * the "Placing orders" section in particular is a first draft.
+ * and a short glossary. Renders as a NON-MODAL drawer on the right — the
+ * page behind stays live, so you can read the key steps while pasting into
+ * Settings. Desktop: content shifts left to make room. Phone: full-width
+ * over the content. Sections are <details> so they collapse like the fleet's
+ * accordion menus and deep-link by id. Update as features land — the
+ * "Placing orders" section in particular is a first draft.
  */
 export function HelpPanel({ onBack, onOpenSettings, section }: Props) {
   const [open, setOpen] = useState<Set<HelpSection>>(() => new Set(section ? [section] : ["start"]));
@@ -76,16 +79,15 @@ export function HelpPanel({ onBack, onOpenSettings, section }: Props) {
   });
 
   return (
-    <>
-      <div className="detail-bar">
-        <button className="btn btn--ghost" type="button" onClick={onBack}>
-          ‹ Back
-        </button>
+    <aside className="help-drawer" aria-label="Help">
+      <div className="help-drawer__bar">
         <span className="sym">Help</span>
-        <span />
+        <button className="btn btn--ghost" type="button" onClick={onBack} aria-label="Close help">
+          ✕
+        </button>
       </div>
 
-      <div className="card">
+      <div className="help-drawer__body card">
         <Section {...sectionProps("start")} title="What Bullpen is">
           <p>
             Bullpen is a <strong>paper-trading</strong> app: real market prices, pretend money. You get a $100,000 practice
@@ -334,6 +336,6 @@ export function HelpPanel({ onBack, onOpenSettings, section }: Props) {
           </p>
         </Section>
       </div>
-    </>
+    </aside>
   );
 }
