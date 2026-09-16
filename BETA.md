@@ -8,21 +8,32 @@ app on your phone.
 
 ## 1. Get free Alpaca paper-trading keys (2 minutes)
 
-1. Sign up at https://app.alpaca.markets/signup (email + password; no funding,
-   no ID needed for paper trading).
-2. In the dashboard, use the switch at the top-left to select **Paper Trading**.
-3. On the right, find **API Keys** and click **Generate** (or **View**). Copy
-   the **Key ID** and the **Secret Key** — the secret is shown only once, so
-   copy it now (you can always regenerate).
+1. Go to https://app.alpaca.markets/signup and create an account with an
+   email and password. Confirm the verification email.
+2. You may be invited to open a real brokerage account (ID, funding, etc.).
+   **Skip that** — paper trading works without it.
+3. In the dashboard, use the account switcher at the **top-left** to make sure
+   **Paper Trading** is selected. The paper dashboard shows a $100,000 balance.
+4. On the right side of the paper Overview page, find the **Your API Keys**
+   panel. Click **View** if it's collapsed, then **Generate New Keys** (or
+   **Regenerate**).
+5. Copy both values: the **API Key ID** (starts with `PK`) and the **Secret
+   Key**. The secret is shown **once** — copy it now. Lose it? Just regenerate.
 
 ## 2. Put the keys in Bullpen
 
 Open the app, tap the **☰ menu** (top-left) → **Settings · Alpaca keys**,
-paste both values and tap **Save keys on this device**, then **Test
-connection**. You should see your account status and $100,000 of paper equity.
+paste both values, tap **Save keys on this device**, then **Test
+connection**. You should see your account status and $100,000 of paper
+equity.
 
 The keys stay in your browser; they are never stored on a server. They are
 paper keys, so even if someone got them they could only place pretend trades.
+Fundamentals (market cap, P/E, earnings dates) are already set up on the
+hosted app — nothing extra to do.
+
+**Stuck?** The app has a full walkthrough: ☰ → **Help & getting started**,
+including what every screen does and a glossary.
 
 ## 3. Install it on your phone (optional but nicer)
 

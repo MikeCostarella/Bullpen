@@ -1,5 +1,27 @@
 # CHANGES
 
+## 0.7.0 — In-app Help, Discover search, location polish (2026-09-16)
+
+### Added
+- **Help** (`src/features/help/HelpPanel.tsx`, ☰ → Tools → *Help & getting
+  started*): collapsible sections — what Bullpen is; Alpaca paper keys step
+  by step (with an *Open Settings* button); the six screens; Discover;
+  placing orders (first draft, reads the live risk limits); fundamentals
+  (Finnhub — hosted vs. dev instructions chosen automatically); installing
+  on a phone; data sources and limits; glossary; reporting problems.
+  Deep-linkable: `openHelp("alpaca")` (`helpEvents.ts`) from the no-keys and
+  rejected-keys banners and from Settings.
+- **Discover search box** — the ticker/company type-ahead, opening the detail
+  panel.
+- `src/data/junk.ts` — shared warrant/unit/preferred/SPAC patterns; By location
+  gains a "Hide warrants, units & SPAC shells" toggle (on by default, shows
+  the hidden count).
+
+### Changed
+- By location: region chips and the state/city selects are mutually exclusive;
+  both dropdowns alphabetical.
+- BETA.md: exact Alpaca signup/paper/key steps; points at in-app Help.
+
 ## 0.6.0 — Beta packaging: bring-your-own-keys, relay, Pages (2026-09-15)
 
 ### Added

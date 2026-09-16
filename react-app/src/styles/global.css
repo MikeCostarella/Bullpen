@@ -935,3 +935,79 @@ body {
   accent-color: var(--accent);
   margin: 0;
 }
+
+/* Help panel (collapsible sections) */
+.help {
+  border-bottom: 1px solid var(--border);
+}
+.help:last-child {
+  border-bottom: 0;
+}
+.help__title {
+  cursor: pointer;
+  padding: 12px 0;
+  font-weight: 600;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.help__title::-webkit-details-marker {
+  display: none;
+}
+.help__title::before {
+  content: "▸";
+  color: var(--text-faint);
+  font-size: 0.8em;
+}
+.help[open] > .help__title::before {
+  content: "▾";
+}
+.help__body {
+  padding: 0 0 14px 18px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.help__body p,
+.help__body ul,
+.help__body ol {
+  margin: 0 0 10px;
+}
+.help__body ul,
+.help__body ol {
+  padding-left: 20px;
+}
+.help__body li {
+  margin-bottom: 6px;
+}
+.help__body a {
+  color: var(--info);
+}
+.help__body code {
+  font-family: var(--mono);
+  font-size: 13px;
+  background: var(--surface-2);
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+.help__dl {
+  margin: 0 0 10px;
+}
+.help__dl dt {
+  font-weight: 600;
+  margin-top: 8px;
+}
+.help__dl dd {
+  margin: 2px 0 0;
+  color: var(--text-muted);
+}
+.linklike {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--info);
+  text-decoration: underline;
+  cursor: pointer;
+}

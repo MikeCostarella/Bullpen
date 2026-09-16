@@ -5,6 +5,7 @@ import { maskKey, setCredentials } from "../../config/credentials";
 import { env } from "../../config/env";
 import { useCredentials } from "../../hooks/useCredentials";
 import { fmtMoney } from "../../lib/format";
+import { openHelp } from "../help/helpEvents";
 
 interface Props {
   onBack: () => void;
@@ -88,7 +89,10 @@ export function SettingsPanel({ onBack }: Props) {
               app.alpaca.markets
             </a>
             : after signing up, switch to <em>Paper Trading</em> (top-left), open <em>API Keys</em>, generate a pair and paste
-            both here. Live-trading keys will not work.
+            both here. Live-trading keys will not work.{" "}
+            <button type="button" className="linklike" onClick={() => openHelp("alpaca")}>
+              Full step-by-step in Help
+            </button>
           </div>
         )}
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BrokerProvider } from "./app/BrokerContext";
 import { SymbolIndexProvider } from "./app/SymbolIndexContext";
 import { BottomNav, type Tab } from "./components/BottomNav";
@@ -11,6 +11,8 @@ import { CandleChart } from "./features/chart/CandleChart";
 import { Discover } from "./features/discover/Discover";
 import { JournalView } from "./features/journal/JournalView";
 import { SettingsPanel } from "./features/settings/SettingsPanel";
+import { HelpPanel } from "./features/help/HelpPanel";
+import { HELP_EVENT, type HelpSection } from "./features/help/helpEvents";
 import { SymbolDetail } from "./features/symbol/SymbolDetail";
 import { Watchlist } from "./features/watchlist/Watchlist";
 import { useLocalStorage } from "./hooks/useLocalStorage";
@@ -25,6 +27,19 @@ export default function App() {
   /** When set, the symbol detail panel covers the current tab. */
   const [detail, setDetail] = useState<string | null>(null);
   const [settings, setSettings] = useState(false);
+  /** Help overlay; the string is the section to open at. */
+  const [help, setHelp] = useState<HelpSection | null | undefined>(undefined);
+  const helpOpen = help !== undefined;
+
+  // Banners and other leaf components ask for help via a window event.
+  useEffect(() => {
+    const onHelp = (e: Event) => {
+      setSettings(false);
+      setHelp((e as CustomEvent<HelpSection | undefined>).detail ?? null);
+    };
+    window.addEventListener(HELP_EVENT, onHelp);
+    return () => window.removeEventListener(HELP_EVENT, onHelp);
+  }, []);
 
   const goChart = (s: string) => {
     setSymbol(s);
@@ -43,7 +58,12 @@ export default function App() {
   const changeTab = (t: Tab) => {
     setDetail(null);
     setSettings(false);
+    setHelp(undefined);
     setTab(t);
+  };
+  const openSettings = () => {
+    setHelp(undefined);
+    setSettings(true);
   };
 
   return (
@@ -52,7 +72,7 @@ export default function App() {
         <div className="app">
           <header className="app__header">
             <div className="app__header-left">
-              <MainMenu tab={tab} onTabChange={changeTab} onOpenSettings={() => setSettings(true)} />
+              <MainMenu tab={tab} onTabChange={changeTab} onOpenSettings={openSettings} onOpenHelp={() => setHelp(null)} />
               <div className="app__title">Bullpen</div>
             </div>
             <div className="app__pills">
@@ -67,7 +87,9 @@ export default function App() {
                 This build is pointed at LIVE trading. Real money. Are you sure?
               </div>
             )}
-            {settings ? (
+            {helpOpen ? (
+              <HelpPanel onBack={() => setHelp(undefined)} onOpenSettings={openSettings} section={help ?? undefined} />
+            ) : settings ? (
               <SettingsPanel onBack={() => setSettings(false)} />
             ) : detail ? (
               <SymbolDetail

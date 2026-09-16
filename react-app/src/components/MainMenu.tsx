@@ -30,6 +30,7 @@ interface Props {
   tab: Tab;
   onTabChange: (t: Tab) => void;
   onOpenSettings: () => void;
+  onOpenHelp: () => void;
 }
 
 /**
@@ -39,7 +40,7 @@ interface Props {
  * on outside click / Escape. Tools keep the menu open so you can see the
  * result in Status.
  */
-export function MainMenu({ tab, onTabChange, onOpenSettings }: Props) {
+export function MainMenu({ tab, onTabChange, onOpenSettings, onOpenHelp }: Props) {
   const index = useSymbolIndex();
   const watch = useWatchlist();
   const creds = useCredentials();
@@ -150,6 +151,17 @@ export function MainMenu({ tab, onTabChange, onOpenSettings }: Props) {
           </Section>
 
           <Section title="Tools">
+            <button
+              type="button"
+              role="menuitem"
+              className="menu-item"
+              onClick={() => {
+                onOpenHelp();
+                setOpen(false);
+              }}
+            >
+              Help &amp; getting started
+            </button>
             <button
               type="button"
               role="menuitem"

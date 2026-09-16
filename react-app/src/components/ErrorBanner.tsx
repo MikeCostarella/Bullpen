@@ -1,6 +1,7 @@
 import { BrokerError } from "../broker/BrokerAdapter";
 import { getCredentials } from "../config/credentials";
 import { env } from "../config/env";
+import { openHelp } from "../features/help/helpEvents";
 
 export function ErrorBanner({ error }: { error: Error | undefined }) {
   if (!error) return null;
@@ -10,14 +11,20 @@ export function ErrorBanner({ error }: { error: Error | undefined }) {
         return (
           <div className="banner banner--warn">
             Alpaca rejected the keys saved on this device. Open <strong>Menu → Settings</strong> and check they're your{" "}
-            <em>paper</em> keys.
+            <em>paper</em> keys.{" "}
+            <button type="button" className="linklike" onClick={() => openHelp("alpaca")}>
+              Step-by-step
+            </button>
           </div>
         );
       }
       if (env.apiBase) {
         return (
           <div className="banner banner--warn">
-            No Alpaca keys yet. Open <strong>Menu → Settings</strong> and paste your free paper-trading keys to get started.
+            No Alpaca keys yet. Open <strong>Menu → Settings</strong> and paste your free paper-trading keys to get started.{" "}
+            <button type="button" className="linklike" onClick={() => openHelp("alpaca")}>
+              How do I get keys?
+            </button>
           </div>
         );
       }
