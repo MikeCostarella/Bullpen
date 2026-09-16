@@ -44,9 +44,15 @@ export function ByLocation({ onSelect }: Props) {
 
   // Only US filers get a state; everything else is bucketed by country for the picker's tail.
   const usRows = useMemo(() => (data?.rows ?? []).filter((r) => r.country === "US" && US_STATES[r.state]), [data]);
-  const states = useMemo(() => tally(usRows, (r) => r.state), [usRows]);
+  // Alphabetical, with the count as a hint rather than the sort key — people
+  // scan a state list by name, not by how many filers it has.
+  const states = useMemo(
+    () => tally(usRows, (r) => r.state).sort((a, b) => US_STATES[a[0]].localeCompare(US_STATES[b[0]])),
+    [usRows],
+  );
   const cities = useMemo(
-    () => tally(usRows.filter((r) => r.state === pick.state), (r) => r.city),
+    () =>
+      tally(usRows.filter((r) => r.state === pick.state), (r) => r.city).sort((a, b) => a[0].localeCompare(b[0])),
     [usRows, pick.state],
   );
 
